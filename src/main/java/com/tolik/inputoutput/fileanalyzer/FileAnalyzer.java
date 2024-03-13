@@ -2,7 +2,6 @@ package com.tolik.inputoutput.fileanalyzer;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class FileAnalyzer {
     public static final int INPUT_SIZE_INCLUDING_LINE_BREAK = 202;
@@ -24,22 +23,25 @@ public class FileAnalyzer {
         System.out.println(INITIAL_CONSOLE_MESSAGE);
         System.out.println(INPUT_SIZE_RESTRICTION_MESSAGE);
 
-        numberOfReadBytes = getNumberOfReadBytes(consoleInputByteArray, System.in, INPUT_SIZE_INCLUDING_LINE_BREAK);
+        numberOfReadBytes = readContent(consoleInputByteArray, System.in, INPUT_SIZE_INCLUDING_LINE_BREAK);
         spacePosition = defineSpasePosition(consoleInputByteArray);
-        String exceptionMessage = validateAndGetExceptionMessage(spacePosition, numberOfReadBytes);
-        if (!Objects.equals(exceptionMessage, "")) {
-            throw new RuntimeException(exceptionMessage);
-        }
+        validateTypedText(spacePosition, numberOfReadBytes);
 
         String filePath = new String(consoleInputByteArray, 0, spacePosition);
-        String wordToFind =
-                new String(consoleInputByteArray, spacePosition + 1, numberOfReadBytes - spacePosition - 2);
-        File file = new File(filePath);
+        String wordToFind = getWordToFind(consoleInputByteArray, spacePosition, numberOfReadBytes);
 
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+        analyzeContentAndPrintResults(filePath, wordToFind);
+    }
+
+    static String getWordToFind(byte[] consoleInputByteArray, int spacePosition, int numberOfReadBytes) {
+        return new String(consoleInputByteArray, spacePosition + 1, numberOfReadBytes - spacePosition - 2);
+    }
+
+    static void analyzeContentAndPrintResults(String filePath, String wordToFind) {
+        try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
 
             ArrayList<String> sentences = getArrayOfSentences(fileInputStream);
-            System.out.println("Number of word "+ wordToFind + " : " + countDefinedWord(sentences, wordToFind));
+            printWordNumber(wordToFind, sentences);
             printSentencesWithWord(sentences, wordToFind);
 
         } catch (FileNotFoundException exception) {
@@ -47,6 +49,10 @@ public class FileAnalyzer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void printWordNumber(String wordToFind, ArrayList<String> sentences) {
+        System.out.println("Number of word " + wordToFind + " : " + getNumberOfDefinedWord(sentences, wordToFind));
     }
 
     private static void printSentencesWithWord(ArrayList<String> sentences, String wordToFind) {
@@ -57,7 +63,7 @@ public class FileAnalyzer {
         }
     }
 
-    static int countDefinedWord(ArrayList<String> sentences, String wordToFind) {
+    static int getNumberOfDefinedWord(ArrayList<String> sentences, String wordToFind) {
         int count = 0;
 
         for (String sentence : sentences) {
@@ -78,7 +84,7 @@ public class FileAnalyzer {
         boolean skipLineSeparator = false;
         while ((charCode = inputStream.read()) != -1) {
             char charFromCode = (char) charCode;
-            if (isCharacterValid(charFromCode, skipLineSeparator)) {
+            if (isItCharacterToSkip(charFromCode, skipLineSeparator)) {
                 stringBuilder.append(charFromCode);
                 skipLineSeparator = false;
             }
@@ -91,11 +97,11 @@ public class FileAnalyzer {
         return sentences;
     }
 
-    private static boolean isCharacterValid(char charFromCode, boolean skipLineSeparator) {
-        return !(('\n' == charFromCode || '\r' == charFromCode) && skipLineSeparator);
+    private static boolean isItCharacterToSkip(char charFromCode, boolean skipLineSeparator) {
+        return !((System.lineSeparator().contains(String.valueOf(charFromCode))) && skipLineSeparator);
     }
 
-    static int getNumberOfReadBytes(byte[] inputByteArray, InputStream inputStream, int length) {
+    static int readContent(byte[] inputByteArray, InputStream inputStream, int length) {
         int numberOfReadBytes;
         try {
             numberOfReadBytes = inputStream.read(inputByteArray, 0, length);
@@ -115,14 +121,13 @@ public class FileAnalyzer {
         return -1;
     }
 
-    static String validateAndGetExceptionMessage(int spacePosition, int numberOfReadBytes) {
+    static void validateTypedText(int spacePosition, int numberOfReadBytes) {
         if (spacePosition == -1) {
-            return NO_SPACE_IN_MESSAGE;
+            throw new RuntimeException(NO_SPACE_IN_MESSAGE);
         } else if (numberOfReadBytes < 3) {
-            return TOO_SHORT_MESSAGE;
+            throw new RuntimeException(TOO_SHORT_MESSAGE);
         } else if (numberOfReadBytes == INPUT_SIZE_INCLUDING_LINE_BREAK) {
-            return TOO_LONG_MESSAGE;
+            throw new RuntimeException(TOO_LONG_MESSAGE);
         }
-        return "";
     }
 }

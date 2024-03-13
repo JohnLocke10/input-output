@@ -11,6 +11,7 @@ import java.util.List;
 
 import static com.tolik.inputoutput.fileanalyzer.FileAnalyzer.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FileAnalyzerTest {
     @DisplayName("check number of read bytes is correct")
@@ -19,7 +20,7 @@ public class FileAnalyzerTest {
         byte[] byteArray = new byte[20];
         byte[] inputBytes = "C:/filePath word".getBytes();
         InputStream inputStream = new ByteArrayInputStream(inputBytes);
-        int numberOfReadBytes = getNumberOfReadBytes(byteArray, inputStream, 20);
+        int numberOfReadBytes = readContent(byteArray, inputStream, 20);
         assertEquals(16, numberOfReadBytes);
     }
 
@@ -39,32 +40,31 @@ public class FileAnalyzerTest {
         assertEquals(-1, defineSpasePosition(spaceInTteMiddle));
     }
 
-    @DisplayName("Check validation message is empty for positive case")
-    @Test
-    public void checkValidationMessageIsEmptyForPositiveCase() {
-        assertEquals("",
-                validateAndGetExceptionMessage(15, 20));
-    }
-
     @DisplayName("Check validation message when spase position is negative")
     @Test
     public void checkValidationMessageWhenSpasePositionIsNegative() {
-        assertEquals("There is no spase in typed text",
-                validateAndGetExceptionMessage(-1, 20));
+        RuntimeException actualException = assertThrows(RuntimeException.class, () -> {
+            validateTypedText(-1, 20);
+        });
+        assertEquals("There is no spase in typed text", actualException.getMessage());
     }
 
     @DisplayName("Check validation message when number of read bytes is less than three")
     @Test
     public void checkValidationMessageWhenNumberOfReadBytesIsLessThanThree() {
-        assertEquals("Typed char sequence is too short",
-                validateAndGetExceptionMessage(1, 2));
+        RuntimeException actualException = assertThrows(RuntimeException.class, () -> {
+            validateTypedText(1, 2);
+        });
+        assertEquals("Typed char sequence is too short", actualException.getMessage());
     }
 
     @DisplayName("Check validation message when input size limit is reached")
     @Test
     public void checkValidationMessageWhenInputSizeLimitIsReached() {
-        assertEquals("Typed char sequence is too long",
-                validateAndGetExceptionMessage(1, 202));
+        RuntimeException actualException = assertThrows(RuntimeException.class, () -> {
+            validateTypedText(1, 202);
+        });
+        assertEquals("Typed char sequence is too long", actualException.getMessage());
     }
 
     @DisplayName("check when sentence contains dot put it to list")
@@ -125,7 +125,7 @@ public class FileAnalyzerTest {
         ArrayList<String> sentences = new ArrayList<>();
         sentences.add("ourWord is present in sentence, repeat,ourWord is present.");
         sentences.add("in this sentence ourWord is present!");
-        assertEquals(3, countDefinedWord(sentences, "ourWord"));
+        assertEquals(3, getNumberOfDefinedWord(sentences, "ourWord"));
     }
 
     @DisplayName("Check count defined word for sentences without word")
@@ -134,7 +134,7 @@ public class FileAnalyzerTest {
         ArrayList<String> sentences = new ArrayList<>();
         sentences.add("Nothing is present in sentence, repeat, nothing is present.");
         sentences.add("in this sentence nothing is present!");
-        assertEquals(0, countDefinedWord(sentences, "ourWord"));
+        assertEquals(0, getNumberOfDefinedWord(sentences, "ourWord"));
     }
 
     @DisplayName("Check count defined word for empty sentences")
@@ -143,7 +143,17 @@ public class FileAnalyzerTest {
         ArrayList<String> sentences = new ArrayList<>();
         sentences.add("");
         sentences.add("");
-        assertEquals(0, countDefinedWord(sentences, "ourWord"));
+        assertEquals(0, getNumberOfDefinedWord(sentences, "ourWord"));
     }
+
+    @DisplayName("Check find word after spase in string")
+    @Test
+    public void checkFindWordAfterSpaseInString() {
+
+        String text = "C:/fileFolder1 WordToFind" + '\n';
+        String actualWord = getWordToFind(text.getBytes(), 14, text.getBytes().length);
+        assertEquals("WordToFind", actualWord);
+    }
+
 
 }
