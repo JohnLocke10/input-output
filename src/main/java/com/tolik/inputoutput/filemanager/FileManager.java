@@ -33,22 +33,30 @@ public class FileManager {
         File fileTo = new File(to);
 
         if (fileFrom.isDirectory()) {
-            fileTo.mkdirs();
-            File[] innerFiles = fileFrom.listFiles();
-            for (File innerFile : innerFiles) {
-                copy(innerFile.getAbsolutePath(), to + File.separator + innerFile.getName());
-            }
+            copyFolder(to, fileTo, fileFrom);
         } else {
-            FileInputStream fileInputStream = new FileInputStream(from);
-            FileOutputStream fileOutputStream = new FileOutputStream(to);
+            copyFile(from, to);
+        }
+    }
+
+    private static void copyFile(String from, String to) throws IOException {
+        try (FileInputStream fileInputStream = new FileInputStream(from);
+             FileOutputStream fileOutputStream = new FileOutputStream(to)) {
+
             byte[] byteArray = new byte[255];
             int readBytesNumber;
 
             while ((readBytesNumber = fileInputStream.read(byteArray)) > 0) {
                 fileOutputStream.write(byteArray, 0, readBytesNumber);
             }
-            fileInputStream.close();
-            fileOutputStream.close();
+        }
+    }
+
+    private static void copyFolder(String to, File fileTo, File fileFrom) throws IOException {
+        fileTo.mkdirs();
+        File[] innerFiles = fileFrom.listFiles();
+        for (File innerFile : innerFiles) {
+            copy(innerFile.getAbsolutePath(), to + File.separator + innerFile.getName());
         }
     }
 

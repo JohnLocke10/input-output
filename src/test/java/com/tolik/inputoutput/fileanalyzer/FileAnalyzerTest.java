@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.tolik.inputoutput.fileanalyzer.FileAnalyzer.*;
@@ -116,6 +117,33 @@ public class FileAnalyzerTest {
                 actualSentences.get(1));
         assertEquals("Third sentence!",
                 actualSentences.get(2));
+    }
+
+    @DisplayName("Check count defined word for sentences with word")
+    @Test
+    public void checkCountDefinedWordForSentencesWithWord() {
+        ArrayList<String> sentences = new ArrayList<>();
+        sentences.add("ourWord is present in sentence, repeat,ourWord is present.");
+        sentences.add("in this sentence ourWord is present!");
+        assertEquals(3, countDefinedWord(sentences, "ourWord"));
+    }
+
+    @DisplayName("Check count defined word for sentences without word")
+    @Test
+    public void checkCountDefinedWordForSentencesWithoutWord() {
+        ArrayList<String> sentences = new ArrayList<>();
+        sentences.add("Nothing is present in sentence, repeat, nothing is present.");
+        sentences.add("in this sentence nothing is present!");
+        assertEquals(0, countDefinedWord(sentences, "ourWord"));
+    }
+
+    @DisplayName("Check count defined word for empty sentences")
+    @Test
+    public void checkCountDefinedWordForEmptySentences() {
+        ArrayList<String> sentences = new ArrayList<>();
+        sentences.add("");
+        sentences.add("");
+        assertEquals(0, countDefinedWord(sentences, "ourWord"));
     }
 
 }

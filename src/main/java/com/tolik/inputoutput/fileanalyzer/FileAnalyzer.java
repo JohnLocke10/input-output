@@ -39,17 +39,35 @@ public class FileAnalyzer {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
 
             ArrayList<String> sentences = getArrayOfSentences(fileInputStream);
-            for (String sentence : sentences) {
-                if (sentence.contains(wordToFind)) {
-                    System.out.println(sentence);
-                }
-            }
+            System.out.println("Number of word "+ wordToFind + " : " + countDefinedWord(sentences, wordToFind));
+            printSentencesWithWord(sentences, wordToFind);
+
         } catch (FileNotFoundException exception) {
             throw new RuntimeException(String.format(FILE_NOT_FOUND, filePath));
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void printSentencesWithWord(ArrayList<String> sentences, String wordToFind) {
+        for (String sentence : sentences) {
+            if (sentence.contains(wordToFind)) {
+                System.out.println(sentence);
+            }
+        }
+    }
+
+    static int countDefinedWord(ArrayList<String> sentences, String wordToFind) {
+        int count = 0;
+
+        for (String sentence : sentences) {
+            int index = sentence.indexOf(wordToFind);
+            while (index != -1) {
+                count++;
+                index = sentence.indexOf(wordToFind, ++index);
+            }
+        }
+        return count;
     }
 
     static ArrayList<String> getArrayOfSentences(InputStream inputStream) throws IOException {

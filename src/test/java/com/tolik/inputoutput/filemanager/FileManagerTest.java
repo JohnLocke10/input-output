@@ -1,8 +1,13 @@
 package com.tolik.inputoutput.filemanager;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static com.tolik.inputoutput.filemanager.FileManager.*;
@@ -11,7 +16,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FileManagerTest {
 
     public static final String MAIN_TMP_FOLDER_PATH = "src/test/resources/FileManagerTest/tmp1/mainFolder";
+    public static final String INNER_SECOND_FOLDER_PATH = "src/test/resources/FileManagerTest/tmp1/mainFolder/innerSecondDir";
     public final String EMPTY_FOLDER_PATH = "src/test/resources/FileManagerTest/tmp1/mainFolder/emptyDir";
+    public final String FIRST_FILE_PATH = "src/test/resources/FileManagerTest/tmp1/mainFolder/firstFile.txt";
+    public final String INNER_SECOND_FILE_PATH =
+            "src/test/resources/FileManagerTest/tmp1/mainFolder/innerSecondDir/innerSecondFile.txt";
     static File mainTMPFolder = new File(MAIN_TMP_FOLDER_PATH);
 
     @BeforeEach
@@ -19,16 +28,22 @@ public class FileManagerTest {
         mainTMPFolder.mkdirs();
         File emptyDir = new File(EMPTY_FOLDER_PATH);
         emptyDir.mkdirs();
-        File firstFile = new File("src/test/resources/FileManagerTest/tmp1/mainFolder/firstFile.txt");
+        File firstFile = new File(FIRST_FILE_PATH);
         if (!firstFile.exists()) {
             assertTrue(firstFile.createNewFile());
+            try (FileOutputStream fileOutputStream = new FileOutputStream(firstFile)) {
+                fileOutputStream.write(("Some text in " + firstFile.getName()).getBytes());
+            }
         }
-        File innerSecondDir = new File("src/test/resources/FileManagerTest/tmp1/mainFolder/innerSecondDir");
+        File innerSecondDir = new File(INNER_SECOND_FOLDER_PATH);
         innerSecondDir.mkdir();
         File innerSecondFile =
-                new File("src/test/resources/FileManagerTest/tmp1/mainFolder/innerSecondDir/innerSecondFile.txt");
+                new File(INNER_SECOND_FILE_PATH);
         if (!innerSecondFile.exists()) {
             assertTrue(innerSecondFile.createNewFile());
+            try (FileOutputStream fileOutputStream = new FileOutputStream(innerSecondFile)) {
+                fileOutputStream.write(("Some text in " + innerSecondFile.getName()).getBytes());
+            }
         }
     }
 
@@ -75,6 +90,26 @@ public class FileManagerTest {
         assertEquals(0, countFolders(EMPTY_FOLDER_PATH));
     }
 
+    @DisplayName("Check content of files in copied folders")
+    @Test
+    public void checkContentOfFilesInCopiedFolders() throws IOException {
+        File destinationFolder = new File("src/test/resources/FileManagerTest/tmp4");
+        assertFalse(destinationFolder.exists());
+        destinationFolder.mkdir();
+        copy(MAIN_TMP_FOLDER_PATH, destinationFolder.getPath());
+        String expectedFileContentFirst = "Some text in " + new File(FIRST_FILE_PATH).getName();
+        String expectedFileContentSecond = "Some text in " + new File(INNER_SECOND_FILE_PATH).getName();
+        byte[] byteArrayFirst = new byte[expectedFileContentFirst.getBytes().length];
+        byte[] byteArraySecond = new byte[expectedFileContentSecond.getBytes().length];
+        try (FileInputStream fileInputStreamFirst = new FileInputStream(FIRST_FILE_PATH);
+             FileInputStream fileInputStreamSecond = new FileInputStream(INNER_SECOND_FILE_PATH)) {
+            fileInputStreamFirst.read(byteArrayFirst);
+            fileInputStreamSecond.read(byteArraySecond);
+        }
+        assertEquals(expectedFileContentFirst, new String(byteArrayFirst));
+        assertEquals(expectedFileContentSecond, new String(byteArraySecond));
+    }
+
     @DisplayName("Check copy not empty folder")
     @Test
     public void checkCopyNotEmptyFolder() throws IOException {
@@ -108,6 +143,7 @@ public class FileManagerTest {
         assertFalse(destinationFolder.exists());
         destinationFolder.mkdir();
         move(MAIN_TMP_FOLDER_PATH, destinationFolder.getPath());
+        assertTrue(destinationFolder.exists());
         assertEquals(2, countFiles("src/test/resources/FileManagerTest/tmp3"));
         assertEquals(2, countFolders("src/test/resources/FileManagerTest/tmp3"));
         assertFalse(new File(MAIN_TMP_FOLDER_PATH).exists());
@@ -122,6 +158,7 @@ public class FileManagerTest {
         move(EMPTY_FOLDER_PATH, destinationFolder.getPath());
         assertEquals(0, countFiles(destinationFolder.getPath()));
         assertEquals(0, countFolders(destinationFolder.getPath()));
+        assertTrue(destinationFolder.exists());
         assertFalse(new File(EMPTY_FOLDER_PATH).exists());
     }
 
