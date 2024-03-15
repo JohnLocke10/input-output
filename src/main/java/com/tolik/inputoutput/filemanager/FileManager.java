@@ -102,12 +102,16 @@ public class FileManager {
         checkSrcPathCorrectness(path);
         File file = new File(path);
         if (file.isFile()) {
-            System.out.println("File added: " + file.getAbsoluteFile());
+            System.out.println("File calculated: " + file.getAbsoluteFile());
             count++;
         } else {
-            File[] innerFiles = file.listFiles();
-            for (File innerFile : innerFiles) {
-                calculateFilesNumber(innerFile.getAbsolutePath());
+            File[] innerFilesArray = file.listFiles();
+            if (innerFilesArray == null) {
+                System.err.println("Cannot access directory: " + file.getAbsolutePath());
+            } else {
+                for (File innerFile : innerFilesArray) {
+                    calculateFilesNumber(innerFile.getAbsolutePath());
+                }
             }
         }
         return count;
