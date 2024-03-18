@@ -84,7 +84,7 @@ public class FileAnalyzer {
         boolean skipLineSeparator = false;
         while ((charCode = inputStream.read()) != -1) {
             char charFromCode = (char) charCode;
-            if (isItCharacterToSkip(charFromCode, skipLineSeparator)) {
+            if (isItValidCharToAdd(charFromCode, skipLineSeparator)) {
                 stringBuilder.append(charFromCode);
                 skipLineSeparator = false;
             }
@@ -97,7 +97,7 @@ public class FileAnalyzer {
         return sentences;
     }
 
-    private static boolean isItCharacterToSkip(char charFromCode, boolean skipLineSeparator) {
+    private static boolean isItValidCharToAdd(char charFromCode, boolean skipLineSeparator) {
         return !((System.lineSeparator().contains(String.valueOf(charFromCode))) && skipLineSeparator);
     }
 
