@@ -3,6 +3,7 @@ package com.tolik.inputoutput.fileanalyzer;
 import java.io.*;
 import java.util.ArrayList;
 
+@Deprecated (since = "10.08.2024")
 public class FileAnalyzer {
     public static final int INPUT_SIZE_INCLUDING_LINE_BREAK = 202;
     public static final String INITIAL_CONSOLE_MESSAGE =

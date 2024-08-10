@@ -16,11 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FileManagerTest {
 
     public static final String MAIN_TMP_FOLDER_PATH = "src/test/resources/FileManagerTest/tmp1/mainFolder";
-    public static final String INNER_SECOND_FOLDER_PATH = "src/test/resources/FileManagerTest/tmp1/mainFolder/innerSecondDir";
-    public final String EMPTY_FOLDER_PATH = "src/test/resources/FileManagerTest/tmp1/mainFolder/emptyDir";
-    public final String FIRST_FILE_PATH = "src/test/resources/FileManagerTest/tmp1/mainFolder/firstFile.txt";
-    public final String INNER_SECOND_FILE_PATH =
-            "src/test/resources/FileManagerTest/tmp1/mainFolder/innerSecondDir/innerSecondFile.txt";
+    public static final String INNER_SECOND_FOLDER_PATH = MAIN_TMP_FOLDER_PATH + "/innerSecondDir";
+    public final String EMPTY_FOLDER_PATH = MAIN_TMP_FOLDER_PATH + "/emptyDir";
+    public final String FIRST_FILE_PATH = MAIN_TMP_FOLDER_PATH + "/firstFile.txt";
+    public final String INNER_SECOND_FILE_PATH = MAIN_TMP_FOLDER_PATH + "/innerSecondDir/innerSecondFile.txt";
     static File mainTMPFolder = new File(MAIN_TMP_FOLDER_PATH);
 
     @BeforeEach
@@ -69,25 +68,25 @@ public class FileManagerTest {
     @DisplayName("Test files count for not empty folder")
     @Test
     public void checkFilesCountForNotEmptyFolder() {
-        assertEquals(2, countFiles("src/test/resources/FileManagerTest/tmp1"));
+        assertEquals(2, calculateFilesNumber("src/test/resources/FileManagerTest/tmp1"));
     }
 
     @DisplayName("Test files count for empty folder")
     @Test
     public void checkFilesCountForEmptyFolder() {
-        assertEquals(0, countFiles(EMPTY_FOLDER_PATH));
+        assertEquals(0, calculateFilesNumber(EMPTY_FOLDER_PATH));
     }
 
     @DisplayName("Test folders count for not empty folder")
     @Test
     public void checkFoldersCountForNotEmptyFolder() {
-        assertEquals(3, countFolders("src/test/resources/FileManagerTest/tmp1"));
+        assertEquals(2, calculateFoldersNumber(MAIN_TMP_FOLDER_PATH));
     }
 
     @DisplayName("Test folders count for empty folder")
     @Test
     public void checkFoldersCountForEmptyFolder() {
-        assertEquals(0, countFolders(EMPTY_FOLDER_PATH));
+        assertEquals(0, calculateFoldersNumber(EMPTY_FOLDER_PATH));
     }
 
     @DisplayName("Check content of files in copied folders")
@@ -117,10 +116,10 @@ public class FileManagerTest {
         assertFalse(destinationFolder.exists());
         destinationFolder.mkdir();
         copy(MAIN_TMP_FOLDER_PATH, destinationFolder.getPath());
-        assertEquals(2, countFiles(destinationFolder.getPath()));
-        assertEquals(2, countFolders(destinationFolder.getPath()));
-        assertEquals(2, countFiles(MAIN_TMP_FOLDER_PATH));
-        assertEquals(2, countFolders(MAIN_TMP_FOLDER_PATH));
+        assertEquals(2, calculateFilesNumber(destinationFolder.getPath()));
+        assertEquals(2, calculateFoldersNumber(destinationFolder.getPath()));
+        assertEquals(2, calculateFilesNumber(MAIN_TMP_FOLDER_PATH));
+        assertEquals(2, calculateFoldersNumber(MAIN_TMP_FOLDER_PATH));
     }
 
     @DisplayName("Check copy empty folder")
@@ -130,10 +129,10 @@ public class FileManagerTest {
         assertFalse(destinationFolder.exists());
         destinationFolder.mkdir();
         copy(EMPTY_FOLDER_PATH, destinationFolder.getPath());
-        assertEquals(0, countFiles(destinationFolder.getPath()));
-        assertEquals(0, countFolders(destinationFolder.getPath()));
-        assertEquals(0, countFiles(EMPTY_FOLDER_PATH));
-        assertEquals(0, countFolders(EMPTY_FOLDER_PATH));
+        assertEquals(0, calculateFilesNumber(destinationFolder.getPath()));
+        assertEquals(0, calculateFoldersNumber(destinationFolder.getPath()));
+        assertEquals(0, calculateFilesNumber(EMPTY_FOLDER_PATH));
+        assertEquals(0, calculateFoldersNumber(EMPTY_FOLDER_PATH));
     }
 
     @DisplayName("Check move not empty folder")
@@ -144,8 +143,8 @@ public class FileManagerTest {
         destinationFolder.mkdir();
         move(MAIN_TMP_FOLDER_PATH, destinationFolder.getPath());
         assertTrue(destinationFolder.exists());
-        assertEquals(2, countFiles("src/test/resources/FileManagerTest/tmp3"));
-        assertEquals(2, countFolders("src/test/resources/FileManagerTest/tmp3"));
+        assertEquals(2, calculateFilesNumber("src/test/resources/FileManagerTest/tmp3"));
+        assertEquals(2, calculateFoldersNumber("src/test/resources/FileManagerTest/tmp3"));
         assertFalse(new File(MAIN_TMP_FOLDER_PATH).exists());
     }
 
@@ -156,8 +155,8 @@ public class FileManagerTest {
         assertFalse(destinationFolder.exists());
         destinationFolder.mkdir();
         move(EMPTY_FOLDER_PATH, destinationFolder.getPath());
-        assertEquals(0, countFiles(destinationFolder.getPath()));
-        assertEquals(0, countFolders(destinationFolder.getPath()));
+        assertEquals(0, calculateFilesNumber(destinationFolder.getPath()));
+        assertEquals(0, calculateFoldersNumber(destinationFolder.getPath()));
         assertTrue(destinationFolder.exists());
         assertFalse(new File(EMPTY_FOLDER_PATH).exists());
     }

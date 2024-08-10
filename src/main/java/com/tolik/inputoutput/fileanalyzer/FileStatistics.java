@@ -1,18 +1,18 @@
 package com.tolik.inputoutput.fileanalyzer;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class FileStatistics {
 
     private int worldCount;
 
-    private ArrayList<String> sentencesWithWorld;
+    private List<String> sentencesWithWorld;
 
-    public ArrayList<String> getSentencesWithWorld() {
+    public List<String> getSentencesWithWorld() {
         return sentencesWithWorld;
     }
 
-    public void setSentencesWithWorld(ArrayList<String> sentencesWithWorld) {
+    public void setSentencesWithWorld(List<String> sentencesWithWorld) {
         this.sentencesWithWorld = sentencesWithWorld;
     }
 

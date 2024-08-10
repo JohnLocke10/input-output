@@ -9,19 +9,6 @@ import java.util.Objects;
 public class FileManager {
 
     public static final String INCORRECT_PATH = "Your path is incorrect: ";
-    private static int count = 0;
-
-    public static int countFiles(String path) {
-        int result = calculateFilesNumber(path);
-        resetCount();
-        return result;
-    }
-
-    public static int countFolders(String path) {
-        int result = calculateFoldersNumber(path);
-        resetCount();
-        return result;
-    }
 
     public static void copy(String from, String to) throws IOException {
         checkSrcPathCorrectness(from);
@@ -61,8 +48,7 @@ public class FileManager {
     }
 
     public static void move(String from, String to) throws IOException {
-        copy(from, to);
-        delete(from);
+        new File(from).renameTo(new File(to));
     }
 
     public static boolean delete(String path) {
@@ -85,39 +71,38 @@ public class FileManager {
         }
     }
 
-    private static int calculateFoldersNumber(String path) {
+    public static int calculateFoldersNumber(String path) {
         checkSrcPathCorrectness(path);
         File file = new File(path);
-        if (file.isDirectory()) {
-            File[] innerFiles = file.listFiles();
-            for (File innerFile : innerFiles) {
-                calculateFoldersNumber(innerFile.getAbsolutePath());
+        int folderCount = 0;
+        File[] listFiles = file.listFiles();
+        for (File innerFile : listFiles) {
+            if (innerFile.isDirectory()) {
+                folderCount++;
+                folderCount = folderCount + calculateFoldersNumber(innerFile.getAbsolutePath());
             }
-            count++;
         }
-        return count - 1;
+        return folderCount;
     }
 
-    private static int calculateFilesNumber(String path) {
+    public static int calculateFilesNumber(String path) {
         checkSrcPathCorrectness(path);
+        int fileCount = 0;
         File file = new File(path);
         if (file.isFile()) {
             System.out.println("File calculated: " + file.getAbsoluteFile());
-            count++;
+            fileCount++;
         } else {
             File[] innerFilesArray = file.listFiles();
             if (innerFilesArray == null) {
                 System.err.println("Cannot access directory: " + file.getAbsolutePath());
             } else {
                 for (File innerFile : innerFilesArray) {
-                    calculateFilesNumber(innerFile.getAbsolutePath());
+                    fileCount = fileCount + calculateFilesNumber(innerFile.getAbsolutePath());
                 }
             }
         }
-        return count;
+        return fileCount;
     }
 
-    private static void resetCount() {
-        count = 0;
-    }
 }
