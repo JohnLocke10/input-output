@@ -79,7 +79,7 @@ public class FileAnalyzer {
     static ArrayList<String> getArrayOfSentences(InputStream inputStream) throws IOException {
         int charCode;
         StringBuilder stringBuilder = new StringBuilder();
-        ArrayList<String> sentences = new ArrayList();
+        ArrayList<String> sentences = new ArrayList<>();
 
         boolean skipLineSeparator = false;
         while ((charCode = inputStream.read()) != -1) {
@@ -105,7 +105,6 @@ public class FileAnalyzer {
         int numberOfReadBytes;
         try {
             numberOfReadBytes = inputStream.read(inputByteArray, 0, length);
-            System.in.close();
         } catch (IOException e) {
             throw new RuntimeException(DATA_READING_EXCEPTION);
         }

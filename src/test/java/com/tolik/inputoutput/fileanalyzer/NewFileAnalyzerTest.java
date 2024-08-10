@@ -22,7 +22,7 @@ public class NewFileAnalyzerTest {
         InputStream inputStreamWithDot = new ByteArrayInputStream(textWithDot);
         List<String> actualSentences = getArrayOfSentences(inputStreamWithDot);
         assertEquals(1, actualSentences.size());
-        assertEquals("Test sentence1   which contains dot.", actualSentences.get(0));
+        assertEquals("Test sentence1   which contains dot.", actualSentences.getFirst());
     }
 
     @DisplayName("check when sentence contains question mark put it to list")
@@ -36,7 +36,7 @@ public class NewFileAnalyzerTest {
         List<String> actualSentences = getArrayOfSentences(inputStreamWithQuestionMark);
         assertEquals(1, actualSentences.size());
         assertEquals("Some text" + System.lineSeparator() +
-                "Is this sentence2 with question mark?", actualSentences.get(0));
+                "Is this sentence2 with question mark?", actualSentences.getFirst());
     }
 
     @DisplayName("check when sentence contains exclamation mark put it to list")
@@ -46,7 +46,7 @@ public class NewFileAnalyzerTest {
         InputStream inputStreamExclamationMark = new ByteArrayInputStream(textWithExclamationMark);
         List<String> actualSentences = getArrayOfSentences(inputStreamExclamationMark);
         assertEquals(1, actualSentences.size());
-        assertEquals("Test sentence3   which contains exclamation mark!", actualSentences.get(0));
+        assertEquals("Test sentence3   which contains exclamation mark!", actualSentences.getFirst());
     }
 
     @DisplayName("check when sentence contains several sentences put all them to list")
